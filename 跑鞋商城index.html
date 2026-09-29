@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RunStore · 跑鞋商城</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e8eaee;--brand:#ff5722;--brand2:#ff8a50}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.head{display:flex;align-items:center;gap:16px;height:68px}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.5px;white-space:nowrap}
+.logo em{font-style:normal;color:var(--brand)}
+.search{flex:1;max-width:420px;position:relative}
+.search input{width:100%;height:42px;border-radius:999px;border:1px solid var(--line);background:#f8f9fb;padding:0 18px 0 42px;font-size:14px;outline:none;transition:.2s}
+.search input:focus{background:#fff;border-color:var(--brand);box-shadow:0 0 0 4px rgba(255,87,34,.1)}
+.search::before{content:"🔍";position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.55}
+.cart-btn{margin-left:auto;position:relative;height:42px;padding:0 18px;border-radius:999px;border:none;background:var(--ink);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px;transition:.2s}
+.cart-btn:hover{background:#1e293b;transform:translateY(-1px)}
+.badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;background:var(--brand);border-radius:999px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
+.hero{margin:24px 0;border-radius:24px;overflow:hidden;background:linear-gradient(120deg,#1b1f2e 0%,#2d1b3d 55%,#4a1f36 100%);color:#fff;padding:44px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.hero h1{font-size:clamp(24px,4vw,38px);line-height:1.25;letter-spacing:-1px;margin:14px 0 12px}
+.hero p{color:#cbd5e1;font-size:14px;line-height:1.7;max-width:420px}
+.hero-badge{display:inline-block;font-size:12px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}
+.hero-art{font-size:120px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.4));animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-14px) rotate(-6deg)}}
+.filters{background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:22px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.flabel{font-size:13px;color:var(--muted);width:44px;flex-shrink:0}
+.chip{border:1px solid var(--line);background:#fff;color:#334155;padding:7px 15px;border-radius:999px;font-size:13px;transition:.18s}
+.chip:hover{border-color:#cbd5e1}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.result{margin-left:auto;font-size:13px;color:var(--muted)}
+select{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;background:#fff;outline:none;color:#334155}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:20px;padding-bottom:40px}
+.card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--line);transition:.25s;cursor:pointer;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(15,23,42,.1);border-color:transparent}
+.thumb{height:178px;position:relative;display:flex;align-items:center;justify-content:center;font-size:74px;transition:.3s}
+.card:hover .thumb{font-size:82px}
+.thumb .tag{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.9);font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;color:#334155}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.brand{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.name{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.price-row{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.price{font-size:19px;font-weight:800;color:var(--brand)}
+.old{font-size:12px;color:#94a3b8;text-decoration:line-through}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px}
+.sales{font-size:12px;color:var(--muted)}
+.add-btn{border:none;background:#fff1ea;color:var(--brand);font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;transition:.2s}
+.add-btn:hover{background:var(--brand);color:#fff}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);opacity:0;pointer-events:none;transition:.25s;z-index:60;backdrop-filter:blur(2px)}
+.overlay.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(410px,100%);background:#fff;z-index:70;display:flex;flex-direction:column;transform:translateX(103%);transition:transform .32s cubic-bezier(.4,0,.2,1);box-shadow:-14px 0 40px rgba(0,0,0,.12)}
+.drawer.show{transform:none}
+.drawer-head{padding:20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.drawer-head h2{font-size:17px}
+.close-x{border:none;background:#f1f5f9;width:32px;height:32px;border-radius:50%;font-size:15px;color:#475569;transition:.2s}
+.close-x:hover{background:#e2e8f0}
+.drawer-body{flex:1;overflow-y:auto;padding:16px 20px}
+.cart-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #f1f5f9}
+.ci-thumb{width:62px;height:62px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:14px;font-weight:700}
+.ci-meta{font-size:12px;color:var(--muted);margin:3px 0 8px}
+.ci-row{display:flex;align-items:center;gap:10px}
+.ci-row b{margin-left:auto;font-size:14px}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.stepper button{border:none;background:#fff;width:28px;height:28px;font-size:15px;color:#475569}
+.stepper button:hover{background:#f1f5f9}
+.stepper span{min-width:26px;text-align:center;font-size:13px;font-weight:600}
+.del{border:none;background:none;color:#94a3b8;font-size:12px}
+.del:hover{color:#ef4444}
+.drawer-foot{padding:18px 20px 22px;border-top:1px solid var(--line)}
+.total-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;font-size:14px;color:var(--muted)}
+.total-row b{font-size:24px;color:var(--brand);font-weight:800}
+.primary{width:100%;height:48px;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 8px 20px rgba(255,87,34,.3);transition:.2s}
+.primary:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(255,87,34,.4)}
+.primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.empty{text-align:center;padding:70px 0;color:var(--muted)}
+.empty div{font-size:52px;margin-bottom:12px}
+.empty p{font-weight:700;color:#334155;margin-bottom:6px}
+.empty span{font-size:13px}
+.modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:.22s}
+.modal.show{opacity:1;pointer-events:auto}
+.modal-card{background:#fff;border-radius:22px;width:100%;max-width:780px;max-height:88vh;overflow:auto;position:relative;transform:scale(.95);transition:.25s;box-shadow:0 30px 70px rgba(0,0,0,.25)}
+.modal.show .modal-card{transform:none}
+.detail-card{display:grid;grid-template-columns:1fr 1fr}
+.d-visual{display:flex;align-items:center;justify-content:center;font-size:130px;min-height:320px}
+.d-info{padding:30px 28px;display:flex;flex-direction:column}
+.d-brand{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.d-info h2{font-size:23px;margin:6px 0 10px;letter-spacing:-.5px}
+.d-tags{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.d-tags span{font-size:11px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:999px;font-weight:600}
+.d-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:18px}
+.d-price{font-size:30px;font-weight:800;color:var(--brand);margin-bottom:20px}
+.d-price s{font-size:14px;color:#94a3b8;font-weight:400;margin-left:10px}
+.d-label{font-size:13px;font-weight:700;margin-bottom:10px}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.size{width:48px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;font-size:13px;font-weight:600;color:#334155;transition:.18s}
+.size:hover{border-color:#94a3b8}
+.size.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.d-row{display:flex;gap:12px;margin-top:auto;align-items:center}
+.d-row .stepper{height:48px;border-radius:12px}
+.d-row .stepper button{width:40px;height:46px;font-size:18px}
+.d-row .stepper span{min-width:34px}
+.d-row .primary{flex:1}
+.form-card{max-width:440px;padding:30px 28px}
+.form-card h2{font-size:20px;margin-bottom:6px}
+.form-card>p{font-size:13px;color:var(--muted);margin-bottom:22px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:14px;outline:none;font-family:inherit;background:#f8f9fb;transition:.2s}
+.field input:focus,.field textarea:focus{background:#fff;border-color:var(--brand);box-shadow:0 0 0 4px rgba(255,87,34,.09)}
+.field textarea{resize:vertical;min-height:76px}
+.summary{background:#f8f9fb;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:13px}
+.summary div{display:flex;justify-content:space-between;padding:4px 0;color:var(--muted)}
+.summary div:last-child{border-top:1px dashed #dbe1e8;margin-top:8px;padding-top:10px;color:var(--ink);font-weight:700;font-size:15px}
+.toast{position:fixed;left:50%;bottom:40px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:13px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:.3s;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;padding:34px 20px 50px;color:var(--muted);font-size:13px;line-height:1.9}
+@media(max-width:720px){.head{flex-wrap:wrap;height:auto;padding:12px 0}.search{order:3;max-width:100%;flex-basis:100%}.hero{padding:32px 24px}.hero-art{display:none}.detail-card{grid-template-columns:1fr}.d-visual{min-height:200px;font-size:90px}.flabel{width:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div class="logo">👟 Run<em>Store</em></div>
+    <div class="search"><input id="searchInput" placeholder="搜索跑鞋型号 / 品牌，如 Vaporfly"></div>
+    <button class="cart-btn" id="cartBtn">🛒 购物车 <i class="badge" id="cartCount">0</i></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <span class="hero-badge">🔥 2026 春夏新品已上架</span>
+      <h1>为每一次奔跑<br>选一双对的鞋</h1>
+      <p>竞速 / 缓震 / 稳定 / 训练 —— 全场正品保障，满 599 包邮，30 天无理由退换。</p>
+    </div>
+    <div class="hero-art">👟</div>
+  </section>
+
+  <section class="filters">
+    <div class="frow" id="brandRow"><span class="flabel">品牌</span></div>
+    <div class="frow" id="typeRow"><span class="flabel">类型</span></div>
+    <div class="frow">
+      <span class="flabel">排序</span>
+      <select id="sortSelect">
+        <option value="default">综合推荐</option>
+        <option value="sales">销量优先</option>
+        <option value="priceAsc">价格从低到高</option>
+        <option value="priceDesc">价格从高到低</option>
+      </select>
+      <span class="result" id="resultCount"></span>
+    </div>
+  </section>
+
+  <section class="grid" id="grid"></section>
+</main>
+
+<footer>RunStore · 跑鞋商城 Demo<br>数据仅存储于本地浏览器，刷新不会丢失</footer>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer" id="cartDrawer">
+  <div class="drawer-head">
+    <h2>购物车</h2>
+    <button class="close-x" data-close>✕</button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot">
+    <div class="total-row"><span>合计</span><b id="cartTotal">¥0</b></div>
+    <button class="primary" id="checkoutBtn">去结算</button>
+  </div>
+</aside>
+
+<div class="modal" id="detailModal">
+  <div class="modal-card detail-card" id="detailBox"></div>
+</div>
+
+<div class="modal" id="checkoutModal">
+  <div class="modal-card form-card">
+    <button class="close-x" data-close style="position:absolute;top:16px;right:16px;">✕</button>
+    <h2>填写收货信息</h2>
+    <p>演示环境，不会产生真实订单与扣款</p>
+    <div class="field"><label>收货人</label><input id="fName" placeholder="请输入姓名"></div>
+    <div class="field"><label>手机号</label><input id="fPhone" placeholder="11 位手机号" maxlength="11"></div>
+    <div class="field"><label>收货地址</label><textarea id="fAddr" placeholder="省 / 市 / 区 / 详细地址"></textarea></div>
+    <div class="summary" id="orderSummary"></div>
+    <button class="primary" id="submitOrder">提交订单</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODUCTS=[
+{id:'p1',name:'Vaporfly 3',brand:'Nike',type:'竞速',price:1699,oldPrice:1899,sales:1280,c1:'#6366f1',c2:'#a855f7',emoji:'⚡',sizes:[39,40,41,42,43,44,45],desc:'全掌碳板 + ZoomX 泡棉，极致轻量与回弹，为刷新个人最好成绩而生。'},
+{id:'p2',name:'Pegasus 41',brand:'Nike',type:'训练',price:899,oldPrice:1099,sales:3420,c1:'#0ea5e9',c2:'#22d3ee',emoji:'🌀',sizes:[38,39,40,41,42,43,44],desc:'经典万金油训练鞋，ReactX 泡棉回弹升级，日常跑量堆叠无压力。'},
+{id:'p3',name:'Adizero Adios Pro 4',brand:'adidas',type:'竞速',price:1899,oldPrice:2099,sales:860,c1:'#f43f5e',c2:'#fb923c',emoji:'🚀',sizes:[39,40,41,42,43,44],desc:'能量碳柱 + Lightstrike Pro 中底，为马拉松竞速打造的速度机器。'},
+{id:'p4',name:'Ultraboost 22',brand:'adidas',type:'缓震',price:1299,oldPrice:1499,sales:2100,c1:'#14b8a6',c2:'#84cc16',emoji:'☁️',sizes:[38,39,40,41,42,43,44,45],desc:'BOOST 中底带来绵密脚感，日常慢跑与通勤两相宜的舒适之选。'},
+{id:'p5',name:'Gel-Kayano 31',brand:'ASICS',type:'稳定',price:1290,oldPrice:1390,sales:980,c1:'#3b82f6',c2:'#06b6d4',emoji:'🛡️',sizes:[39,40,41,42,43,44],desc:'4D GUIDANCE SYSTEM 稳定支撑，为低足弓与过度内旋跑者保驾护航。'},
+{id:'p6',name:'Novablast 5',brand:'ASICS',type:'缓震',price:990,oldPrice:1090,sales:1560,c1:'#8b5cf6',c2:'#d946ef',emoji:'🌊',sizes:[38,39,40,41,42,43,44],desc:'FF BLAST MAX 泡棉，弹感十足的日常训练鞋，越跑越上瘾。'},
+{id:'p7',name:'Clifton 10',brand:'HOKA',type:'缓震',price:1099,oldPrice:1199,sales:1320,c1:'#f59e0b',c2:'#fbbf24',emoji:'🪶',sizes:[39,40,41,42,43,44],desc:'超轻厚底设计，长距离慢跑的云朵脚感，膝盖友好。'},
+{id:'p8',name:'Endorphin Speed 4',brand:'Saucony',type:'训练',price:1399,oldPrice:1499,sales:740,c1:'#ef4444',c2:'#f97316',emoji:'💨',sizes:[39,40,41,42,43,44],desc:'尼龙板 + PWRRUN PB，速度训练与节奏跑的性价比之王。'},
+{id:'p9',name:'FuelCell Rebel v4',brand:'New Balance',type:'训练',price:999,oldPrice:1099,sales:890,c1:'#64748b',c2:'#94a3b8',emoji:'🏃',sizes:[38,39,40,41,42,43,44],desc:'轻量 FuelCell 泡棉，节奏跑与间歇跑的首选利器。'},
+{id:'p10',name:'Ghost 16',brand:'Brooks',type:'缓震',price:899,oldPrice:999,sales:1750,c1:'#0d9488',c2:'#2dd4bf',emoji:'👟',sizes:[39,40,41,42,43,44,45],desc:'DNA LOFT v3 缓震科技，中性跑者可靠的日常训练伙伴。'}
+];
+const BRANDS=[...new Set(PRODUCTS.map(p=>p.brand))];
+const TYPES=[...new Set(PRODUCTS.map(p=>p.type))];
+const $=s=>document.querySelector(s);
+const yuan=n=>'¥'+n.toLocaleString('zh-CN');
+let state={brand:'全部',type:'全部',sort:'default',q:'',cart:loadCart()};
+let detail={id:null,size:null,qty:1};
+
+function loadCart(){try{return JSON.parse(localStorage.getItem('runstore_cart'))||[]}catch(e){return[]}}
+function saveCart(){try{localStorage.setItem('runstore_cart',JSON.stringify(state.cart))}catch(e){}}
+const findProduct=id=>PRODUCTS.find(p=>p.id===id);
+
+function renderFilters(){
+  $('#brandRow').innerHTML='<span class="flabel">品牌</span>'+['全部',...BRANDS].map(b=>`<button class="chip ${state.brand===b?'on':''}" data-filter="brand" data-value="${b}">${b}</button>`).join('');
+  $('#typeRow').innerHTML='<span class="flabel">类型</span>'+['全部',...TYPES].map(t=>`<button class="chip ${state.type===t?'on':''}" data-filter="type" data-value="${t}">${t}</button>`).join('');
+}
+function currentList(){
+  const q=state.q.trim().toLowerCase();
+  let list=PRODUCTS.filter(p=>(state.brand==='全部'||p.brand===state.brand)&&(state.type==='全部'||p.type===state.type)&&(!q||(p.brand+p.name+p.type).toLowerCase().includes(q)));
+  if(state.sort==='sales')list.sort((a,b)=>b.sales-a.sales);
+  if(state.sort==='priceAsc')list.sort((a,b)=>a.price-b.price);
+  if(state.sort==='priceDesc')list.sort((a,b)=>b.price-a.price);
+  return list;
+}
+function renderProducts(){
+  const list=currentList();const grid=$('#grid');
+  $('#resultCount').textContent=`共 ${list.length} 款`;
+  if(!list.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div>🔍</div><p>没有找到匹配的跑鞋</p><span>换个关键词或筛选条件试试</span></div>`;return;}
+  grid.innerHTML=list.map(p=>`<article class="card" data-id="${p.id}"><div class="thumb" style="background:linear-gradient(135deg,${p.c1},${p.c2})"><span class="tag">${p.type}</span>${p.emoji}</div><div class="info"><div class="brand">${p.brand}</div><div class="name">${p.name}</div><div class="price-row"><span class="price">${yuan(p.price)}</span><span class="old">${yuan(p.oldPrice)}</span></div><div class="card-foot"><span class="sales">已售 ${p.sales}</span><button class="add-btn" data-add="${p.id}">加入购物车</button></div></div></article>`).join('');
+}
+function openDetail(id){detail={id,size:null,qty:1};renderDetail();openModal('detailModal');}
+function renderDetail(){
+  const p=findProduct(detail.id);if(!p)return;
+  $('#detailBox').innerHTML=`<div class="d-visual" style="background:linear-gradient(135deg,${p.c1},${p.c2})">${p.emoji}</div><div class="d-info"><button class="close-x" data-close style="position:absolute;top:16px;right:16px;">✕</button><div class="d-brand">${p.brand}</div><h2>${p.name}</h2><div class="d-tags"><span>${p.type}</span><span>已售 ${p.sales}</span><span>正品保障</span></div><p class="d-desc">${p.desc}</p><div class="d-price">${yuan(p.price)}<s>${yuan(p.oldPrice)}</s></div><div class="d-label">选择尺码（欧码）</div><div class="sizes">${p.sizes.map(s=>`<button class="size ${detail.size===s?'on':''}" data-size="${s}">${s}</button>`).join('')}</div><div class="d-row"><div class="stepper"><button data-act="qty-dec">−</button><span>${detail.qty}</span><button data-act="qty-inc">+</button></div><button class="primary" data-act="add">加入购物车</button></div></div>`;
+}
+function addToCart(id,size,qty){
+  const exist=state.cart.find(i=>i.id===id&&i.size===size);
+  if(exist)exist.qty=Math.min(exist.qty+qty,99);
+  else state.cart.push({id,size,qty});
+  saveCart();renderCart(true);
+}
+function renderCart(animate){
+  const body=$('#cartBody');state.cart=state.cart.filter(i=>findProduct(i.id));
+  if(!state.cart.length){body.innerHTML=`<div class="empty"><div>🛒</div><p>购物车还是空的</p><span>去挑一双合脚的跑鞋吧</span></div>`;}
+  else{body.innerHTML=state.cart.map(item=>{const p=findProduct(item.id);return `<div class="cart-item"><div class="ci-thumb" style="background:linear-gradient(135deg,${p.c1},${p.c2})">${p.emoji}</div><div class="ci-info"><div class="ci-name">${p.brand} ${p.name}</div><div class="ci-meta">尺码 ${item.size} · 单价 ${yuan(p.price)}</div><div class="ci-row"><div class="stepper"><button data-act="dec" data-key="${item.id}_${item.size}">−</button><span>${item.qty}</span><button data-act="inc" data-key="${item.id}_${item.size}">+</button></div><b>${yuan(p.price*item.qty)}</b><button class="del" data-act="del" data-key="${item.id}_${item.size}">删除</button></div></div></div>`}).join('');}
+  const total=cartTotal(),count=state.cart.reduce((s,i)=>s+i.qty,0);
+  $('#cartTotal').textContent=yuan(total);$('#cartCount').textContent=count;
+  if(animate){const b=$('#cartCount');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');}
+}
+function cartTotal(){return state.cart.reduce((s,i)=>{const p=findProduct(i.id);return p?s+p.price*i.qty:s},0)}
+function openModal(id){$('#'+id).classList.add('show');$('#overlay').classList.add('show');document.body.style.overflow='hidden'}
+function closeAll(){document.querySelectorAll('.modal,.drawer').forEach(el=>el.classList.remove('show'));$('#overlay').classList.remove('show');document.body.style.overflow=''}
+let toastTimer;function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1900)}
+
+document.querySelector('.filters').addEventListener('click',e=>{const btn=e.target.closest('[data-filter]');if(!btn)return;state[btn.dataset.filter]=btn.dataset.value;renderFilters();renderProducts();});
+$('#searchInput').addEventListener('input',e=>{state.q=e.target.value;renderProducts();});
+$('#sortSelect').addEventListener('change',e=>{state.sort=e.target.value;renderProducts();});
+$('#grid').addEventListener('click',e=>{const addBtn=e.target.closest('[data-add]');if(addBtn){openDetail(addBtn.dataset.add);return;}const card=e.target.closest('.card');if(card)openDetail(card.dataset.id);});
+$('#detailBox').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')){closeAll();return;}
+  const sizeBtn=e.target.closest('[data-size]');if(sizeBtn){detail.size=Number(sizeBtn.dataset.size);renderDetail();return;}
+  const actBtn=e.target.closest('[data-act]');if(!actBtn)return;const act=actBtn.dataset.act;
+  if(act==='qty-dec'){detail.qty=Math.max(1,detail.qty-1);renderDetail();}
+  if(act==='qty-inc'){detail.qty=Math.min(20,detail.qty+1);renderDetail();}
+  if(act==='add'){if(!detail.size){toast('请先选择尺码 👟');return;}const p=findProduct(detail.id);addToCart(detail.id,detail.size,detail.qty);toast(`已加入购物车：${p.brand} ${p.name} / ${detail.size}码`);closeAll();$('#cartDrawer').classList.add('show');$('#overlay').classList.add('show');document.body.style.overflow='hidden';}
+});
+$('#cartBtn').addEventListener('click',()=>{$('#cartDrawer').classList.add('show');$('#overlay').classList.add('show');document.body.style.overflow='hidden';});
+$('#cartBody').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-act]');if(!btn)return;const key=btn.dataset.key;const item=state.cart.find(i=>i.id+'_'+i.size===key);if(!item)return;
+  if(btn.dataset.act==='inc')item.qty=Math.min(99,item.qty+1);
+  if(btn.dataset.act==='dec'){item.qty-=1;if(item.qty<=0)state.cart=state.cart.filter(i=>i.id+'_'+i.size!==key);}
+  if(btn.dataset.act==='del'){state.cart=state.cart.filter(i=>i.id+'_'+i.size!==key);toast('已从购物车移除');}
+  saveCart();renderCart();
+});
+$('#checkoutBtn').addEventListener('click',()=>{
+  if(!state.cart.length){toast('购物车是空的，先挑一双吧');return;}
+  const count=state.cart.reduce((s,i)=>s+i.qty,0);const total=cartTotal();const shipping=total>=599?0:12;
+  $('#orderSummary').innerHTML=`<div><span>商品件数</span><span>${count} 件</span></div><div><span>运费</span><span>${shipping?'¥12':'包邮'}</span></div><div><span>应付金额</span><span>${yuan(total+shipping)}</span></div>`;
+  closeAll();openModal('checkoutModal');
+});
+$('#submitOrder').addEventListener('click',()=>{
+  const 
